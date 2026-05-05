@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>朝聖訓練儀表板</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">教練儀表板</p>
+      <h1>訓練成長儀表板</h1>
+    </div>
+    <nav class="top-nav" aria-label="主要導覽">
+      <a href="index.html">任務</a>
+      <a href="map.html">地圖</a>
+      <a class="active" href="dashboard.html">儀表板</a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="status-panel">
+      <div class="status-card">
+        <span>累積距離</span>
+        <strong><span id="dashboardDistance">-</span> km</strong>
+      </div>
+      <div class="status-card">
+        <span>最長健走</span>
+        <strong><span id="dashboardLongest">-</span> km</strong>
+      </div>
+      <div class="status-card">
+        <span>平均疼痛</span>
+        <strong><span id="dashboardPain">-</span> / 10</strong>
+      </div>
+      <div class="status-card">
+        <span>平均疲勞</span>
+        <strong><span id="dashboardFatigue">-</span> / 10</strong>
+      </div>
+    </section>
+
+    <section class="chart-grid">
+      <article class="chart-panel">
+        <h2>累積距離</h2>
+        <div class="chart-canvas">
+          <canvas id="distanceChart"></canvas>
+        </div>
+      </article>
+      <article class="chart-panel">
+        <h2>疲勞與疼痛</h2>
+        <div class="chart-canvas">
+          <canvas id="painFatigueChart"></canvas>
+        </div>
+      </article>
+      <article class="chart-panel">
+        <h2>每週最長健走</h2>
+        <div class="chart-canvas">
+          <canvas id="longestWalkChart"></canvas>
+        </div>
+      </article>
+      <article class="chart-panel">
+        <h2>任務類型比例</h2>
+        <div class="chart-canvas">
+          <canvas id="missionTypeChart"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="records-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">訓練紀錄</p>
+          <h2>完成紀錄</h2>
+        </div>
+        <button class="secondary-button" id="refreshButton" type="button">重新整理</button>
+      </div>
+      <p class="debug-message" id="dashboardMessage">正在讀取資料...</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>時間</th>
+              <th>任務</th>
+              <th>類型</th>
+              <th>距離</th>
+              <th>時間</th>
+              <th>疲勞</th>
+              <th>疼痛</th>
+            </tr>
+          </thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

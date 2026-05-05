@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>朝聖旅程地圖</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">旅程地圖</p>
+      <h1>通往聖地牙哥</h1>
+    </div>
+    <nav class="top-nav" aria-label="主要導覽">
+      <a href="index.html">任務</a>
+      <a class="active" href="map.html">地圖</a>
+      <a href="dashboard.html">儀表板</a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="map-hero">
+      <div>
+        <p class="eyebrow">目前進度</p>
+        <h2 id="mapProgressTitle">正在讀取旅程</h2>
+        <p id="mapProgressText">完成任務後，地圖會往前推進。</p>
+      </div>
+      <div class="map-distance">
+        <span>地圖公里數</span>
+        <strong><span id="routeKmValue">-</span> km</strong>
+      </div>
+    </section>
+
+    <section class="route-panel">
+      <div class="route-line" aria-hidden="true">
+        <div class="route-line-fill" id="routeLineFill"></div>
+      </div>
+      <div class="route-nodes" id="routeNodes" aria-live="polite"></div>
+    </section>
+
+    <section class="map-note-panel">
+      <h2>下一個目的地</h2>
+      <p id="nextNodeText">正在計算下一個節點。</p>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

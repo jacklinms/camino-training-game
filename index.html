@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>朝聖訓練冒險</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">朝聖訓練冒險</p>
+      <h1>本週任務池</h1>
+    </div>
+    <nav class="top-nav" aria-label="主要導覽">
+      <a class="active" href="index.html">任務</a>
+      <a href="map.html">地圖</a>
+      <a href="dashboard.html">儀表板</a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="status-panel" aria-live="polite">
+      <div class="status-card">
+        <span>等級</span>
+        <strong id="levelValue">-</strong>
+      </div>
+      <div class="status-card">
+        <span>累積距離</span>
+        <strong><span id="distanceValue">-</span> km</strong>
+      </div>
+      <div class="status-card">
+        <span>累積 XP</span>
+        <strong id="xpValue">-</strong>
+      </div>
+      <div class="status-card">
+        <span>最長健走</span>
+        <strong><span id="longestWalkValue">-</span> km</strong>
+      </div>
+    </section>
+
+    <section class="week-toolbar">
+      <div>
+        <p class="eyebrow">第 <span id="weekNumberLabel">1</span> 週</p>
+        <h2 id="chapterName">讀取中</h2>
+      </div>
+      <div class="week-actions">
+        <button class="icon-button" id="previousWeekButton" type="button" aria-label="上一週">‹</button>
+        <button class="icon-button" id="nextWeekButton" type="button" aria-label="下一週">›</button>
+      </div>
+    </section>
+
+    <section class="pass-panel">
+      <div>
+        <strong id="passTitle">通關條件</strong>
+        <p id="passDescription">完成任務後會自動更新。</p>
+        <div class="requirement-grid" id="requirementGrid" aria-label="通關進度細節"></div>
+      </div>
+      <div class="progress-track" aria-label="本週完成度">
+        <div id="weekProgressBar" class="progress-fill"></div>
+      </div>
+    </section>
+
+    <section id="missionGrid" class="mission-grid" aria-live="polite"></section>
+  </main>
+
+  <dialog id="completionDialog" class="dialog">
+    <form id="completionForm" method="dialog">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">完成任務</p>
+          <h2 id="dialogMissionTitle">任務</h2>
+        </div>
+        <button class="icon-button" type="button" id="closeDialogButton" aria-label="關閉">×</button>
+      </div>
+
+      <input type="hidden" id="missionIdInput">
+
+      <div class="form-grid">
+        <label>
+          <span>距離 km</span>
+          <input id="actualDistanceInput" name="actualDistanceKm" inputmode="decimal" placeholder="5.2">
+        </label>
+        <label>
+          <span>時間 分鐘</span>
+          <input id="actualMinutesInput" name="actualMinutes" inputmode="decimal" placeholder="58">
+        </label>
+        <label>
+          <span>背包 kg</span>
+          <input id="actualBackpackInput" name="actualBackpackKg" inputmode="decimal" placeholder="0">
+        </label>
+        <label>
+          <span>疲勞 1-10</span>
+          <input id="fatigueInput" name="fatigueScore" inputmode="numeric" placeholder="6">
+        </label>
+        <label>
+          <span>疼痛 1-10</span>
+          <input id="painInput" name="painScore" inputmode="numeric" placeholder="3">
+        </label>
+        <label>
+          <span>疼痛部位</span>
+          <input id="painAreaInput" name="painArea" placeholder="小腿">
+        </label>
+      </div>
+
+      <label class="full-label">
+        <span>心情</span>
+        <input id="moodInput" name="mood" placeholder="開心">
+      </label>
+
+      <label class="full-label">
+        <span>備註</span>
+        <textarea id="notesInput" name="notes" rows="3" placeholder="後半段有點累"></textarea>
+      </label>
+
+      <p class="form-hint" id="formHint">送出後會寫入訓練資料表。</p>
+
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" id="cancelButton">取消</button>
+        <button class="primary-button" type="submit">完成並獲得 XP</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="rewardToast" role="status" aria-live="polite">
+    <p class="eyebrow">任務完成</p>
+    <strong id="rewardToastTitle">今天又更靠近西班牙一點</strong>
+    <span id="rewardToastText">獲得經驗值，旅程繼續前進。</span>
+  </div>
+
+  <template id="missionCardTemplate">
+    <article class="mission-card">
+      <div class="mission-card-header">
+        <span class="type-pill"></span>
+        <span class="size-pill"></span>
+      </div>
+      <h3></h3>
+      <p></p>
+      <dl>
+        <div>
+          <dt>距離</dt>
+          <dd data-field="distance"></dd>
+        </div>
+        <div>
+          <dt>時間</dt>
+          <dd data-field="minutes"></dd>
+        </div>
+        <div>
+          <dt>背包</dt>
+          <dd data-field="backpack"></dd>
+        </div>
+      </dl>
+      <button class="primary-button" type="button">完成任務</button>
+    </article>
+  </template>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -261,8 +261,14 @@
     els.customMissionHint.textContent = '正在建立任務卡片...';
     await window.CaminoApi.post('addMission', payload);
     closeCustomMissionDialog();
-    showGenericToast('任務卡片已建立', `「${payload.title}」已加入第 ${state.weekNumber} 週任務池。`);
+    await wait(1300);
     await loadWeek();
+
+    if (hasMissionTitle(payload.title)) {
+      showGenericToast('任務卡片已建立', `「${payload.title}」已加入第 ${state.weekNumber} 週任務池。`);
+    } else {
+      showGenericToast('尚未看到新卡片', '請先確認 Apps Script 已重新部署新版，或稍等幾秒後重新整理頁面。');
+    }
   }
 
   async function submitCompletion(event) {
@@ -314,6 +320,17 @@
 
   function getDisplayTitle(title) {
     return String(title || '').replace(/\bBoss\b/g, '關卡挑戰');
+  }
+
+  function hasMissionTitle(title) {
+    const normalizedTitle = String(title || '').trim();
+    return state.missions.some((mission) => String(mission.title || '').trim() === normalizedTitle);
+  }
+
+  function wait(ms) {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, ms);
+    });
   }
 
   function formatNumber(value) {

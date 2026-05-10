@@ -71,16 +71,19 @@
         appendHiddenInput(form, key, payload[key]);
       });
 
+      let submitted = false;
       iframe.addEventListener('load', () => {
+        if (!submitted) return;
         setTimeout(() => {
           form.remove();
           iframe.remove();
           resolve({ ok: true });
-        }, 300);
+        }, 800);
       });
 
       document.body.appendChild(iframe);
       document.body.appendChild(form);
+      submitted = true;
       form.submit();
     });
   }

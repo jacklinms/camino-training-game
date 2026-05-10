@@ -21,6 +21,7 @@
     missionGrid: document.getElementById('missionGrid'),
     previousWeekButton: document.getElementById('previousWeekButton'),
     nextWeekButton: document.getElementById('nextWeekButton'),
+    addMissionButton: document.getElementById('addMissionButton'),
     dialog: document.getElementById('completionDialog'),
     form: document.getElementById('completionForm'),
     formHint: document.getElementById('formHint'),
@@ -31,6 +32,12 @@
     actualDistanceInput: document.getElementById('actualDistanceInput'),
     actualMinutesInput: document.getElementById('actualMinutesInput'),
     actualBackpackInput: document.getElementById('actualBackpackInput'),
+    customMissionDialog: document.getElementById('customMissionDialog'),
+    customMissionForm: document.getElementById('customMissionForm'),
+    closeCustomMissionButton: document.getElementById('closeCustomMissionButton'),
+    cancelCustomMissionButton: document.getElementById('cancelCustomMissionButton'),
+    customMissionHint: document.getElementById('customMissionHint'),
+    customTitleInput: document.getElementById('customTitleInput'),
     rewardToast: document.getElementById('rewardToast'),
     rewardToastTitle: document.getElementById('rewardToastTitle'),
     rewardToastText: document.getElementById('rewardToastText'),
@@ -38,10 +45,16 @@
 
   const labels = {
     walk: '健走',
+    run: '跑步',
+    cycling: '騎車',
+    swim: '游泳',
     strength: '肌力',
     recovery: '恢復',
+    mobility: '伸展活動',
     knowledge: '知識',
     boss: '關卡挑戰',
+    bonus: '加碼',
+    other: '其他',
     mini: '短任務',
     normal: '一般',
     long: '長任務',
@@ -66,6 +79,10 @@
     els.closeDialogButton.addEventListener('click', closeDialog);
     els.cancelButton.addEventListener('click', closeDialog);
     els.form.addEventListener('submit', submitCompletion);
+    els.addMissionButton.addEventListener('click', openCustomMissionDialog);
+    els.closeCustomMissionButton.addEventListener('click', closeCustomMissionDialog);
+    els.cancelCustomMissionButton.addEventListener('click', closeCustomMissionDialog);
+    els.customMissionForm.addEventListener('submit', submitCustomMission);
   }
 
   async function loadWeek() {
@@ -176,7 +193,7 @@
       typePill.textContent = labels[mission.missionType] || mission.missionType;
       typePill.classList.add(mission.missionType);
       sizePill.textContent = labels[mission.missionSize] || mission.missionSize;
-      node.querySelector('h3').textContent = mission.title;
+      node.querySelector('h3').textContent = getDisplayTitle(mission.title);
       node.querySelector('p').textContent = mission.description;
       node.querySelector('[data-field="distance"]').textContent = mission.targetDistanceKm ? `${mission.targetDistanceKm} km` : '-';
       node.querySelector('[data-field="minutes"]').textContent = mission.targetMinutes ? `${mission.targetMinutes} 分` : '-';
@@ -216,6 +233,38 @@
     els.dialog.close();
   }
 
+  function openCustomMissionDialog() {
+    els.customMissionForm.reset();
+    els.customMissionHint.textContent = '新增後會出現在本週任務池。';
+    els.customMissionDialog.showModal();
+    window.setTimeout(() => els.customTitleInput.focus(), 50);
+  }
+
+  function closeCustomMissionDialog() {
+    els.customMissionDialog.close();
+  }
+
+  async function submitCustomMission(event) {
+    event.preventDefault();
+    const formData = new FormData(els.customMissionForm);
+    const payload = {
+      weekNumber: state.weekNumber,
+      title: formData.get('title') || '',
+      missionType: formData.get('missionType') || 'bonus',
+      missionSize: formData.get('missionSize') || 'normal',
+      description: formData.get('description') || '',
+      targetDistanceKm: formData.get('targetDistanceKm') || '',
+      targetMinutes: formData.get('targetMinutes') || '',
+      targetBackpackKg: formData.get('targetBackpackKg') || '',
+    };
+
+    els.customMissionHint.textContent = '正在建立任務卡片...';
+    await window.CaminoApi.post('addMission', payload);
+    closeCustomMissionDialog();
+    showGenericToast('任務卡片已建立', `「${payload.title}」已加入第 ${state.weekNumber} 週任務池。`);
+    await loadWeek();
+  }
+
   async function submitCompletion(event) {
     event.preventDefault();
     if (!state.selectedMission) return;
@@ -244,13 +293,27 @@
 
   function showRewardToast(mission) {
     els.rewardToastTitle.textContent = '今天又更靠近西班牙一點';
-    els.rewardToastText.textContent = `完成「${mission.title}」，獲得 ${mission.xpReward} 經驗值，地圖前進 ${mission.routeKmReward} 公里。`;
+    els.rewardToastText.textContent = `完成「${getDisplayTitle(mission.title)}」，獲得 ${mission.xpReward} 經驗值，地圖前進 ${mission.routeKmReward} 公里。`;
+    showToast();
+  }
+
+  function showGenericToast(title, text) {
+    els.rewardToastTitle.textContent = title;
+    els.rewardToastText.textContent = text;
+    showToast();
+  }
+
+  function showToast() {
     els.rewardToast.classList.add('show');
 
-    window.clearTimeout(showRewardToast.timer);
-    showRewardToast.timer = window.setTimeout(() => {
+    window.clearTimeout(showToast.timer);
+    showToast.timer = window.setTimeout(() => {
       els.rewardToast.classList.remove('show');
     }, 4200);
+  }
+
+  function getDisplayTitle(title) {
+    return String(title || '').replace(/\bBoss\b/g, '關卡挑戰');
   }
 
   function formatNumber(value) {

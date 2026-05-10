@@ -411,6 +411,7 @@ label span {
 }
 
 input,
+select,
 textarea {
   width: 100%;
   border: 1px solid var(--line);
@@ -418,6 +419,10 @@ textarea {
   padding: 11px 12px;
   color: var(--ink);
   background: #fffdf8;
+}
+
+select {
+  min-height: 46px;
 }
 
 .full-label {

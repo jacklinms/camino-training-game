@@ -162,6 +162,7 @@ function doPost(e) {
     let result;
 
     if (action === 'completeMission') result = completeMission_(payload);
+    else if (action === 'addMission') result = addMission_(payload);
     else if (action === 'claimReward') result = claimReward_(payload);
     else throw new Error('Unknown action: ' + action);
 
@@ -201,6 +202,45 @@ function completeMission_(payload) {
   unlockBadges_();
 
   return { ok: true, completion: row, summary: getSummary_() };
+}
+
+function addMission_(payload) {
+  const weekNumber = Number(payload.weekNumber || 1);
+  const title = String(payload.title || '').trim();
+  if (!title) throw new Error('title is required.');
+  if (weekNumber < 1 || weekNumber > 12) throw new Error('weekNumber must be between 1 and 12.');
+
+  const missionType = sanitizeMissionType_(payload.missionType || 'bonus');
+  const missionSize = sanitizeMissionSize_(payload.missionSize || 'normal');
+  const targetMinutes = toNumber_(payload.targetMinutes);
+  const targetDistanceKm = toNumber_(payload.targetDistanceKm);
+  const targetBackpackKg = toNumber_(payload.targetBackpackKg);
+  const xpReward = toNumber_(payload.xpReward) || estimateXp_(missionSize, targetMinutes, targetDistanceKm);
+  const routeKmReward = toNumber_(payload.routeKmReward) || estimateRouteKm_(missionType, targetMinutes, targetDistanceKm);
+  const timestamp = Utilities.formatDate(new Date(), APP.timezone, 'yyyyMMddHHmmss');
+
+  const row = {
+    missionId: `W${String(weekNumber).padStart(2, '0')}-CUSTOM-${timestamp}`,
+    weekNumber,
+    chapterName: getChapterName_(weekNumber),
+    missionType,
+    missionSize,
+    title,
+    description: payload.description || '自己新增的加碼任務。',
+    targetDistanceKm,
+    targetMinutes,
+    targetBackpackKg,
+    xpReward,
+    routeKmReward,
+    isBoss: false,
+    requiredForPass: false,
+    unlockWeek: weekNumber,
+    active: true,
+    sortOrder: 95,
+  };
+
+  appendObject_(APP.sheets.missions, row);
+  return { ok: true, mission: row };
 }
 
 function claimReward_(payload) {
@@ -268,6 +308,7 @@ function getSummary_() {
 
 function getDashboardData_() {
   const completions = getRows_(APP.sheets.completions);
+  const missions = getRows_(APP.sheets.missions);
   const summary = getSummary_();
   const byDate = groupByDate_(completions);
   const byWeek = groupByWeek_(completions);
@@ -284,6 +325,7 @@ function getDashboardData_() {
       backpackProgress: buildBackpackProgress_(byDate),
       missionTypeDistribution: buildMissionTypeDistribution_(completions),
     },
+    missions,
     records: completions,
   };
 }
@@ -463,6 +505,32 @@ function toNumber_(value) {
 
 function toBoolean_(value) {
   return value === true || value === 'TRUE' || value === 'true';
+}
+
+function sanitizeMissionType_(value) {
+  const allowed = ['walk', 'run', 'cycling', 'swim', 'strength', 'recovery', 'mobility', 'knowledge', 'bonus', 'other'];
+  return allowed.indexOf(String(value)) >= 0 ? String(value) : 'bonus';
+}
+
+function sanitizeMissionSize_(value) {
+  const allowed = ['mini', 'normal', 'long'];
+  return allowed.indexOf(String(value)) >= 0 ? String(value) : 'normal';
+}
+
+function estimateXp_(missionSize, minutes, distanceKm) {
+  if (missionSize === 'long') return 70;
+  if (missionSize === 'mini') return 20;
+  if (Number(distanceKm) >= 5 || Number(minutes) >= 45) return 45;
+  return 35;
+}
+
+function estimateRouteKm_(missionType, minutes, distanceKm) {
+  if (missionType === 'recovery' || missionType === 'mobility') return 3;
+  if (missionType === 'strength') return 4;
+  if (Number(distanceKm) > 0) return Math.max(3, Math.round(Number(distanceKm) * 1.5));
+  if (Number(minutes) >= 60) return 8;
+  if (Number(minutes) >= 30) return 5;
+  return 3;
 }
 
 function sum_(rows, key) {

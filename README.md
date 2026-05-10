@@ -155,6 +155,26 @@ notes=後半段有點累
 
 新增一筆完成紀錄。
 
+### `POST action=addMission`
+
+新增一張本週自訂任務卡片，例如跑步、騎車、游泳、伸展活動或其他加碼任務。
+
+常用欄位：
+
+```text
+action=addMission
+weekNumber=1
+title=輕鬆跑 30 分鐘
+missionType=run
+missionSize=normal
+targetDistanceKm=3
+targetMinutes=30
+targetBackpackKg=0
+description=今天時間比較多，加一張跑步卡片。
+```
+
+新增後會寫入 `任務_Missions`，並出現在該週任務池。
+
 ### `POST action=claimReward`
 
 標記現實獎勵已領取。
@@ -200,6 +220,8 @@ index.html
 ```
 
 你應該會看到本週任務池。
+
+任務頁可以按「新增任務」建立本週加碼卡片。這個功能需要 Apps Script 後端包含 `addMission` 動作；如果你更新過 `apps-script/Code.gs`，記得在 Apps Script 裡重新部署新版本。
 
 再打開：
 

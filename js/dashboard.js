@@ -34,6 +34,7 @@
 
   function renderDashboard(data) {
     const summary = data.summary || {};
+    const missionTitleById = buildMissionTitleMap(data.missions || []);
     els.distance.textContent = formatNumber(summary.totalDistanceKm);
     els.longest.textContent = formatNumber(summary.longestWalkKm);
     els.pain.textContent = formatNumber(summary.averagePain);
@@ -43,7 +44,7 @@
     renderPainFatigueChart(data.series.painAndFatigue || []);
     renderLongestWalkChart(data.series.weeklyLongestWalk || []);
     renderMissionTypeChart(data.series.missionTypeDistribution || []);
-    renderRecords(data.records || []);
+    renderRecords(data.records || [], missionTitleById);
 
     const count = data.records ? data.records.length : 0;
     els.message.classList.remove('error');
@@ -117,10 +118,16 @@
   function renderMissionTypeChart(rows) {
     const labels = {
       walk: '健走',
+      run: '跑步',
+      cycling: '騎車',
+      swim: '游泳',
       strength: '肌力',
       recovery: '恢復',
+      mobility: '伸展活動',
       knowledge: '知識',
       boss: '關卡挑戰',
+      bonus: '加碼',
+      other: '其他',
     };
 
     drawChart('missionTypeChart', {
@@ -138,7 +145,7 @@
     });
   }
 
-  function renderRecords(records) {
+  function renderRecords(records, missionTitleById) {
     if (!records.length) {
       els.recordsBody.innerHTML = '<tr><td colspan="7">還沒有完成紀錄，先去完成第一個任務吧。</td></tr>';
       return;
@@ -147,7 +154,7 @@
     els.recordsBody.innerHTML = records.slice().reverse().map((row) => `
       <tr>
         <td>${escapeHtml(formatDateTime(row.completedAt))}</td>
-        <td>${escapeHtml(getMissionTitle(row.missionId))}</td>
+        <td>${escapeHtml(getMissionTitle(row.missionId, missionTitleById))}</td>
         <td>${escapeHtml(getMissionTypeLabel(row.missionType))}</td>
         <td>${formatNumber(row.actualDistanceKm)} km</td>
         <td>${formatNumber(row.actualMinutes)} 分</td>
@@ -235,15 +242,33 @@
   function getMissionTypeLabel(type) {
     const labels = {
       walk: '健走',
+      run: '跑步',
+      cycling: '騎車',
+      swim: '游泳',
       strength: '肌力',
       recovery: '恢復',
+      mobility: '伸展活動',
       knowledge: '知識',
       boss: '關卡挑戰',
+      bonus: '加碼',
+      other: '其他',
     };
     return labels[type] || type || '-';
   }
 
-  function getMissionTitle(missionId) {
+  function buildMissionTitleMap(missions) {
+    const map = {};
+    missions.forEach((mission) => {
+      map[mission.missionId] = getDisplayTitle(mission.title);
+    });
+    return map;
+  }
+
+  function getMissionTitle(missionId, missionTitleById) {
+    if (missionTitleById && missionTitleById[missionId]) {
+      return missionTitleById[missionId];
+    }
+
     const match = String(missionId || '').match(/^W(\d{2})-([A-Z]+)-(\d{2})$/);
     if (!match) return missionId || '-';
 
@@ -275,6 +300,10 @@
     return titles[type] && titles[type][order]
       ? titles[type][order]
       : `第 ${week} 週任務`;
+  }
+
+  function getDisplayTitle(title) {
+    return String(title || '').replace(/\bBoss\b/g, '關卡挑戰');
   }
 
   function escapeHtml(value) {

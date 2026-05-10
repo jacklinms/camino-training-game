@@ -47,6 +47,7 @@
       <div class="week-actions">
         <button class="icon-button" id="previousWeekButton" type="button" aria-label="上一週">‹</button>
         <button class="icon-button" id="nextWeekButton" type="button" aria-label="下一週">›</button>
+        <button class="secondary-button" id="addMissionButton" type="button">新增任務</button>
       </div>
     </section>
 
@@ -118,6 +119,71 @@
       <div class="dialog-actions">
         <button class="secondary-button" type="button" id="cancelButton">取消</button>
         <button class="primary-button" type="submit">完成並獲得 XP</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="customMissionDialog" class="dialog">
+    <form id="customMissionForm" method="dialog">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">加碼任務</p>
+          <h2>新增本週卡片</h2>
+        </div>
+        <button class="icon-button" type="button" id="closeCustomMissionButton" aria-label="關閉">×</button>
+      </div>
+
+      <div class="form-grid">
+        <label>
+          <span>任務名稱</span>
+          <input name="title" id="customTitleInput" required placeholder="例如：輕鬆跑 30 分鐘">
+        </label>
+        <label>
+          <span>任務類型</span>
+          <select name="missionType" id="customTypeInput">
+            <option value="run">跑步</option>
+            <option value="walk">健走</option>
+            <option value="cycling">騎車</option>
+            <option value="swim">游泳</option>
+            <option value="strength">肌力</option>
+            <option value="recovery">恢復</option>
+            <option value="mobility">伸展活動</option>
+            <option value="bonus">加碼</option>
+            <option value="other">其他</option>
+          </select>
+        </label>
+        <label>
+          <span>任務大小</span>
+          <select name="missionSize" id="customSizeInput">
+            <option value="normal">一般</option>
+            <option value="mini">短任務</option>
+            <option value="long">長任務</option>
+          </select>
+        </label>
+        <label>
+          <span>目標距離 km</span>
+          <input name="targetDistanceKm" inputmode="decimal" placeholder="3">
+        </label>
+        <label>
+          <span>目標時間 分鐘</span>
+          <input name="targetMinutes" inputmode="decimal" placeholder="30">
+        </label>
+        <label>
+          <span>背包 kg</span>
+          <input name="targetBackpackKg" inputmode="decimal" placeholder="0">
+        </label>
+      </div>
+
+      <label class="full-label">
+        <span>任務說明</span>
+        <textarea name="description" rows="3" placeholder="今天時間比較多，加一張自己想完成的任務。"></textarea>
+      </label>
+
+      <p class="form-hint" id="customMissionHint">新增後會出現在本週任務池。</p>
+
+      <div class="dialog-actions">
+        <button class="secondary-button" type="button" id="cancelCustomMissionButton">取消</button>
+        <button class="primary-button" type="submit">建立卡片</button>
       </div>
     </form>
   </dialog>

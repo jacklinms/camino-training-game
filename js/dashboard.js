@@ -147,7 +147,7 @@
 
   function renderRecords(records, missionTitleById) {
     if (!records.length) {
-      els.recordsBody.innerHTML = '<tr><td colspan="7">還沒有完成紀錄，先去完成第一個任務吧。</td></tr>';
+      els.recordsBody.innerHTML = '<tr><td colspan="8">還沒有完成紀錄，先去完成第一個任務吧。</td></tr>';
       return;
     }
 
@@ -160,6 +160,7 @@
         <td>${formatNumber(row.actualMinutes)} 分</td>
         <td>${formatNumber(row.fatigueScore)}</td>
         <td>${formatNumber(row.painScore)}</td>
+        <td>${escapeHtml(row.notes || '-')}</td>
       </tr>
     `).join('');
   }

@@ -29,6 +29,7 @@
     cancelButton: document.getElementById('cancelButton'),
     dialogMissionTitle: document.getElementById('dialogMissionTitle'),
     missionIdInput: document.getElementById('missionIdInput'),
+    completedAtInput: document.getElementById('completedAtInput'),
     actualDistanceInput: document.getElementById('actualDistanceInput'),
     actualMinutesInput: document.getElementById('actualMinutesInput'),
     actualBackpackInput: document.getElementById('actualBackpackInput'),
@@ -279,6 +280,7 @@
     const payload = {
       userId: window.CAMINO_CONFIG.USER_ID || 'USER-001',
       missionId: state.selectedMission.missionId,
+      completedAt: formatDateTimeForApi(formData.get('completedAt')),
       actualDistanceKm: formData.get('actualDistanceKm') || '',
       actualMinutes: formData.get('actualMinutes') || '',
       actualBackpackKg: formData.get('actualBackpackKg') || '',
@@ -331,6 +333,11 @@
     return new Promise((resolve) => {
       window.setTimeout(resolve, ms);
     });
+  }
+
+  function formatDateTimeForApi(value) {
+    if (!value) return '';
+    return String(value).replace('T', ' ') + ':00';
   }
 
   function formatNumber(value) {
